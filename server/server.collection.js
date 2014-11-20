@@ -1,5 +1,10 @@
-Posts = new Meteor.Collection("posts");
-Posts.allow({
+Words = new Meteor.Collection("words");
+
+Meteor.publish("allwords", function () {
+    return Words.find({});
+});
+
+Words.allow({
     insert: function(){
         return true;
     },

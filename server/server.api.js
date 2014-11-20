@@ -10,7 +10,7 @@ Router.route('/restful', {where: 'server'})
         setHeader(this);
 
         this.response.end(JSON.stringify(
-            Posts.find().fetch()
+            Words.find().fetch()
         ));
     })
     .post(function () {
@@ -18,7 +18,7 @@ Router.route('/restful', {where: 'server'})
         setHeader(this);
 
         this.response.end(JSON.stringify(
-            Posts.insert(this.request.body)
+            Words.insert(deserialize(this.request.body))
         ));
     });
 
@@ -31,7 +31,7 @@ Router.route('/restful/:id', {where: 'server'})
 
         console.log("id: " + this.params.id);
         this.response.end(JSON.stringify(
-            Posts.findOne({_id: this.params.id })
+            Words.findOne({_id: this.params.id })
         ));
     })
     .put(function () {
@@ -39,7 +39,7 @@ Router.route('/restful/:id', {where: 'server'})
         setHeader(this);
 
         this.response.end(JSON.stringify(
-            Posts.update({_id: this.params.id },{$set:{
+            Words.update({_id: this.params.id },{$set:{
                 word: this.request.body.word
             }})
         ));
@@ -50,7 +50,7 @@ Router.route('/restful/:id', {where: 'server'})
         setHeader(this);
 
         this.response.end(JSON.stringify(
-            Posts.remove({_id: this.params.id })
+            Words.remove({_id: this.params.id })
         ));
     })
 
@@ -75,3 +75,21 @@ function setHeader(obj){
     obj.response.setHeader("Access-Control-Allow-Origin", "*");
     obj.response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 }
+
+function deserialize (text) {
+    var res;
+
+    try {
+        res = JSON.parse(text);
+    }
+    catch (e) {
+        // that means text is string as opposed to serialized object
+        if (e.toString().match(/SyntaxError: Unexpected token/)) {
+            res = text;
+        }
+        else {
+            throw e;
+        }
+    }
+    return res;
+};
